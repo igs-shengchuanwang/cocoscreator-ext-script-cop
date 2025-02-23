@@ -1,0 +1,1 @@
+"use strict";module.exports={open_panel:"Script-Cop Panel",send_to_panel:"Send message to Script-Cop Panel",description:"Extension with a panel"};

@@ -1,0 +1,63 @@
+{
+    "$schema": "./@types/schema/package/index.json",
+    "package_version": 2,
+    "name": "script-cop",
+    "version": "1.0.0",
+    "author": "Cocos Creator",
+    "editor": ">=3.8.5",
+    "scripts": {
+        "preinstall": "node ./scripts/preinstall.js",
+        "build": "npx tsc",
+        "watch": "npx tsc -w"
+    },
+    "description": "i18n:script-cop.description",
+    "main": "./dist/main.js",
+    "dependencies": {
+        "fs-extra": "^10.0.0"
+    },
+    "devDependencies": {
+        "@cocos/creator-types": "^3.8.5",
+        "@types/fs-extra": "^9.0.5",
+        "@types/node": "^18.17.1",
+        "typescript": "^4.3.4"
+    },
+    "panels": {
+        "default": {
+            "title": "script-cop Panel",
+            "type": "dockable",
+            "main": "dist/panels/default",
+            "size": {
+                "min-width": 400,
+                "min-height": 200,
+                "width": 800,
+                "height": 600
+            }
+        }
+    },
+    "contributions": {
+        "menu": [
+            {
+                "path": "i18n:menu.panel/script-cop",
+                "label": "i18n:script-cop.open_panel",
+                "message": "open-panel"
+            },
+            {
+                "path": "i18n:menu.develop/script-cop",
+                "label": "i18n:script-cop.send_to_panel",
+                "message": "send-to-panel"
+            }
+        ],
+        "messages": {
+            "open-panel": {
+                "methods": [
+                    "openPanel"
+                ]
+            },
+            "send-to-panel": {
+                "methods": [
+                    "default.hello"
+                ]
+            }
+        }
+    }
+}
