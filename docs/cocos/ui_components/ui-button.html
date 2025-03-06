@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Button Component Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-top: 1.5em;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .example {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .button-demo {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .button-demo:hover {
+            background: #e9ecef;
+        }
+
+        .button-demo.danger {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .button-demo.success {
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        .button-demo.primary {
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .button-demo.warning {
+            color: #ffc107;
+            border-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>UI Button Component</h1>
+
+    <h2>Initialize</h2>
+
+    <h3>Basic button:</h3>
+    <div class="example">
+        <button class="button-demo">Button</button>
+        <pre><code>&lt;ui-button&gt;Button&lt;/ui-button&gt;</code></pre>
+    </div>
+
+    <h3>Disabled</h3>
+    <div class="example">
+        <button class="button-demo" disabled>disabled</button>
+        <pre><code>&lt;ui-button disabled&gt;disabled&lt;/ui-button&gt;</code></pre>
+    </div>
+
+    <h3>Types</h3>
+    <div class="example">
+        <button class="button-demo">default</button>
+        <button class="button-demo danger">danger</button>
+        <button class="button-demo success">success</button>
+        <button class="button-demo primary">primary</button>
+        <button class="button-demo warning">warning</button>
+        <pre><code>&lt;ui-button type="default"&gt;default&lt;/ui-button&gt;
+&lt;ui-button type="danger"&gt;danger&lt;/ui-button&gt;
+&lt;ui-button type="success"&gt;success&lt;/ui-button&gt;
+&lt;ui-button type="primary"&gt;primary&lt;/ui-button&gt;
+&lt;ui-button type="warning"&gt;warning&lt;/ui-button&gt;</code></pre>
+    </div>
+
+    <h3>Outline Style</h3>
+    <div class="example">
+        <button class="button-demo" style="background: transparent;">outline</button>
+        <button class="button-demo danger" style="background: transparent;">danger outline</button>
+        <button class="button-demo success" style="background: transparent;">success outline</button>
+        <button class="button-demo primary" style="background: transparent;">primary outline</button>
+        <button class="button-demo warning" style="background: transparent;">warning outline</button>
+        <pre><code>&lt;ui-button outline&gt;outline&lt;/ui-button&gt;
+&lt;ui-button type="danger" outline&gt;danger outline&lt;/ui-button&gt;
+&lt;ui-button type="success" outline&gt;success outline&lt;/ui-button&gt;
+&lt;ui-button type="primary" outline&gt;primary outline&lt;/ui-button&gt;
+&lt;ui-button type="warning" outline&gt;warning outline&lt;/ui-button&gt;</code></pre>
+    </div>
+
+    <h3>Loading State</h3>
+    <div class="example">
+        <button class="button-demo" disabled>loading...</button>
+        <pre><code>&lt;ui-button loading&gt;loading...&lt;/ui-button&gt;</code></pre>
+    </div>
+
+    <h2>Parameters</h2>
+
+    <h3>Attributes</h3>
+    <pre><code>// Button type
+type: 'danger' | 'success' | 'primary' | 'warning' | 'default' | 'icon'
+
+// Make background transparent and invert text and border colors
+outline: boolean
+
+// Disable the button
+disabled: boolean
+
+// Set the button to loading status
+loading: boolean</code></pre>
+
+    <h2>Events</h2>
+
+    <h3>Available Events</h3>
+    <pre><code>'change'
+'confirm' // general case use this event</code></pre>
+
+    <h3>Usage Examples</h3>
+
+    <h4>Vue.js</h4>
+    <pre><code>&lt;ui-button @confirm="onConfirm"&gt;click me&lt;/ui-button&gt;
+
+// vue object
+methods = {
+    onConfirm() {
+        this.clickedNumber++;
+    }
+};</code></pre>
+
+    <h4>Vanilla JavaScript</h4>
+    <pre><code>&lt;ui-button id="button"&gt;click me&lt;/ui-button&gt;
+
+const element = document.getElementById('#button');
+element.addEventListener('confirm', () => {
+    clickedNumber++;
+});</code></pre>
+
+    <div class="note">
+        <strong>Note:</strong> This is a built-in UI component for Cocos Creator Editor. It can only be used within editor extensions and uses the editor's custom event system (e.g., `confirm` event instead of standard `click` event).
+    </div>
+</body>
+</html>
