@@ -16,12 +16,6 @@ module.exports = Editor.Panel.define({
         app: '#app',
     },
     methods: {
-        hello() {
-            if (this.$.app) {
-                this.$.app.innerHTML = 'hello';
-                console.log('[cocos-panel-html.default]: hello');
-            }
-        },
     },
     ready() {
         if (this.$.app) {
