@@ -13,15 +13,51 @@ module.exports = Editor.Panel.define({
     template: readFileSync(join(__dirname, '../../../static/template/default/index.html'), 'utf-8'),
     style: readFileSync(join(__dirname, '../../../static/style/default/index.css'), 'utf-8'),
     $: {
-        app: '#app',
+        container: '.container',
+        leftPanel: '.left-panel',
+        rightPanel: '.right-panel',
+        elementList: '.element-list',
+        searchButton: '.search-button'
     },
     methods: {
+        hello() {
+            console.log('[script-cop.default]: hello');
+        },
+        
+        // 处理搜索按钮点击
+        handleSearchClick() {
+            console.log('Search button clicked');
+            // 这里可以添加搜索功能的实现
+        },
+
+        // 添加元素项点击处理方法
+        handleElementClick(event: MouseEvent) {
+            const target = event.target as HTMLElement;
+            if (target.classList.contains('element-item')) {
+                // 处理元素点击
+                console.log('Clicked element:', target.textContent);
+            }
+        }
     },
     ready() {
-        if (this.$.app) {
-            this.$.app.innerHTML = 'Hello Cocos.';
+        // 添加事件监听
+        if (this.$.elementList) {
+            this.$.elementList.addEventListener('click', this.handleElementClick.bind(this));
+        }
+        
+        if (this.$.searchButton) {
+            this.$.searchButton.addEventListener('confirm', this.handleSearchClick.bind(this));
         }
     },
     beforeClose() { },
-    close() { },
+    close() {
+        // 清理事件监听
+        if (this.$.elementList) {
+            this.$.elementList.removeEventListener('click', this.handleElementClick.bind(this));
+        }
+        
+        if (this.$.searchButton) {
+            this.$.searchButton.removeEventListener('confirm', this.handleSearchClick.bind(this));
+        }
+    },
 });
