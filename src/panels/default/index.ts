@@ -17,7 +17,6 @@ module.exports = Editor.Panel.define({
         leftPanel: '.left-panel',
         rightPanel: '.right-panel',
         elementList: '.element-list',
-        searchButton: '.search-button'
     },
     methods: {
         hello() {
@@ -44,20 +43,12 @@ module.exports = Editor.Panel.define({
         if (this.$.elementList) {
             this.$.elementList.addEventListener('click', this.handleElementClick.bind(this));
         }
-        
-        if (this.$.searchButton) {
-            this.$.searchButton.addEventListener('confirm', this.handleSearchClick.bind(this));
-        }
     },
     beforeClose() { },
     close() {
         // 清理事件监听
         if (this.$.elementList) {
             this.$.elementList.removeEventListener('click', this.handleElementClick.bind(this));
-        }
-        
-        if (this.$.searchButton) {
-            this.$.searchButton.removeEventListener('confirm', this.handleSearchClick.bind(this));
         }
     },
 });

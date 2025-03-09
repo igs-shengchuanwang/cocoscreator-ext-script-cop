@@ -14,7 +14,7 @@
     },
     "panels": {
         "default": {
-            "title": "script-cop Default Panel",
+            "title": "腳本警察",
             "type": "dockable",
             "main": "dist/panels/default",
             "size": {
@@ -29,7 +29,7 @@
         "menu": [
             {
                 "path": "i18n:menu.panel/script-cop",
-                "label": "i18n:script-cop.open_panel",
+                "label": "開啟腳本警察",
                 "message": "open-panel"
             }
         ],
