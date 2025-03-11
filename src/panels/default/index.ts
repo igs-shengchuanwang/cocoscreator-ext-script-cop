@@ -20,10 +20,6 @@ module.exports = Editor.Panel.define({
         folderInspect: '#folder-inspect',
     },
     methods: {
-        hello() {
-            console.log('[script-cop.default]: hello');
-        },
-
         // Handle element item click
         handleElementClick(event: MouseEvent) {
             const target = event.target as HTMLElement;

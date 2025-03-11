@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { FileInfo, findTsFiles, getFileInfo } from './utils/filesys';
+import { FileInfo, findTsFiles, getFileInfo, BundleInfo } from './utils/filesys';
 
 /**
  * Script analysis status enumeration
@@ -37,6 +37,7 @@ export interface ScriptInfo extends FileInfo {
  * Script database class
  */
 export class ScriptDatabase {
+    private bundles: Map<string, BundleInfo> = new Map();
     private scripts: Map<string, ScriptInfo> = new Map();
     private projectRoot: string;
 

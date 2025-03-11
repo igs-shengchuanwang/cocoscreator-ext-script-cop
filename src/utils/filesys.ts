@@ -67,6 +67,13 @@ export function isTypeScriptFile(filePath: string): boolean {
     return filePath.endsWith('.ts') || filePath.endsWith('.tsx');
 }
 
+export interface BundleInfo {
+    dirInfo: DirectoryInfo;
+    name: string;
+    priority: number;
+    configName?: string;
+}
+
 /**
  * 获取文件的基本信息
  * @param filePath 文件路径
