@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 /**
- * @zh 如果希望兼容 3.3 之前的版本可以使用下方的代码
+ * @zh If you want compatibility with versions prior to 3.3, you can use the code below
  * @en You can add the code below if you want compatibility with versions prior to 3.3
  */
 // Editor.Panel.define = Editor.Panel.define || function(options: any) { return options }
@@ -24,11 +24,11 @@ module.exports = Editor.Panel.define({
             console.log('[script-cop.default]: hello');
         },
 
-        // 添加元素项点击处理方法
+        // Handle element item click
         handleElementClick(event: MouseEvent) {
             const target = event.target as HTMLElement;
             if (target.classList.contains('element-item')) {
-                // 处理元素点击
+                // Process element click
                 console.log('Clicked element:', target.textContent);
             }
         },
@@ -36,29 +36,38 @@ module.exports = Editor.Panel.define({
         async folderInspectConfirm() {
             try {
                 const result = await Editor.Dialog.select({
-                    title: '選擇要檢查的資料夾',
+                    title: 'Select Folder to Inspect',
                     type: 'directory',
-                    button: '選擇資料夾',
+                    button: 'Select Folder',
                     multi: false,
                 });
                 if (result.filePaths && result.filePaths.length > 0) {
                     const selectedPath = result.filePaths[0];
-                    const { findTsFiles } = require('../../utils/filesys');
-                    // 查找所有 TypeScript 文件
-                    const tsFiles = findTsFiles(selectedPath);
-                    console.log('Found TypeScript files:', tsFiles);
+                    const { ScriptDatabase } = require('../../copdb');
+                    // Create script database instance
+                    const scriptDB = new ScriptDatabase(selectedPath);
+                    // Load all TypeScript files from directory
+                    scriptDB.loadFromDirectory(selectedPath);
+                    // Get statistics
+                    const stats = scriptDB.getStatistics();
+                    console.log('Script Statistics:', stats);
+                    // Get all script information
+                    const allScripts = scriptDB.getAllScripts();
+                    console.log('All Scripts:', allScripts);
+                    // Can further process script information, e.g. display in UI
+                    // TODO: Update UI display
                 }
             } catch (error) {
                 console.error('Error selecting folder:', error);
                 Editor.Message.broadcast('editor-notify', {
                     type: 'error',
-                    message: '選擇資料夾時發生錯誤'
+                    message: 'Error occurred while selecting folder'
                 });
             }
         }
     },
     ready() {
-        // 添加事件监听
+        // Add event listeners
         if (this.$.elementList) {
             this.$.elementList.addEventListener('click', this.handleElementClick.bind(this));
         }
@@ -70,7 +79,7 @@ module.exports = Editor.Panel.define({
     beforeClose() { },
 
     close() {
-        // 清理事件监听
+        // Clean up event listeners
         if (this.$.elementList) {
             this.$.elementList.removeEventListener('click', this.handleElementClick.bind(this));
         }
