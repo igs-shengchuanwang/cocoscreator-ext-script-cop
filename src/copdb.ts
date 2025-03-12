@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { FileInfo, findTsFiles, getFileInfo, BundleInfo } from './utils/filesys';
+import { FileInfo, findTsFiles, getFileInfo, BundleInfo, findBundles } from './utils/filesys';
 
 /**
  * Script analysis status enumeration
@@ -34,15 +34,36 @@ export interface ScriptInfo extends FileInfo {
 }
 
 /**
- * Script database class
+ * Script database class - Singleton Pattern
  */
 export class ScriptDatabase {
+    private static instance: ScriptDatabase | null = null;
     private bundles: Map<string, BundleInfo> = new Map();
     private scripts: Map<string, ScriptInfo> = new Map();
-    private projectRoot: string;
+    private projectRoot: string = '';
 
-    constructor(projectRoot: string) {
+    private constructor() {
+        // 私有构造函数，防止直接实例化
+    }
+
+    /**
+     * 获取 ScriptDatabase 单例
+     */
+    public static getInstance(): ScriptDatabase {
+        if (!ScriptDatabase.instance) {
+            ScriptDatabase.instance = new ScriptDatabase();
+        }
+        return ScriptDatabase.instance;
+    }
+
+    /**
+     * 初始化数据库
+     * @param projectRoot 项目根目录
+     */
+    public initialize(projectRoot: string): void {
         this.projectRoot = projectRoot;
+        this.bundles.clear();
+        this.scripts.clear();
     }
 
     /**
@@ -145,6 +166,62 @@ export class ScriptDatabase {
         this.scripts.forEach(script => {
             stats.byStatus[script.analyzeStatus]++;
             stats.totalIssues += script.issues.length;
+        });
+
+        return stats;
+    }
+
+    /**
+     * 加载所有 bundle 信息
+     * @param assetsPath assets 目录路径
+     */
+    public async loadBundles(assetsPath: string): Promise<void> {
+        try {
+            const bundles = await findBundles(assetsPath);
+            // 清空现有 bundles
+            this.bundles.clear();
+            // 添加新的 bundles
+            for (const bundle of bundles) {
+                this.bundles.set(bundle.name, bundle);
+            }
+            console.log(`Loaded ${this.bundles.size} bundles from ${assetsPath}`);
+        } catch (error) {
+            console.error('Error loading bundles:', error);
+        }
+    }
+
+    /**
+     * 获取所有 bundle 信息
+     */
+    public getAllBundles(): BundleInfo[] {
+        return Array.from(this.bundles.values());
+    }
+
+    /**
+     * 获取指定 bundle 的信息
+     * @param bundleName bundle 名称
+     */
+    public getBundle(bundleName: string): BundleInfo | undefined {
+        return this.bundles.get(bundleName);
+    }
+
+    /**
+     * 获取 bundle 统计信息
+     */
+    public getBundleStatistics(): {
+        totalBundles: number;
+        totalFiles: number;
+        totalSize: number;
+    } {
+        const stats = {
+            totalBundles: this.bundles.size,
+            totalFiles: 0,
+            totalSize: 0
+        };
+
+        this.bundles.forEach(bundle => {
+            stats.totalFiles += bundle.dirInfo.fileCount;
+            stats.totalSize += bundle.dirInfo.totalSize;
         });
 
         return stats;
