@@ -1,10 +1,24 @@
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
+import { buildFileTreeData, initializeFileTree, TreeNode } from '../inspect/script-tree';
 /**
  * @zh If you want compatibility with versions prior to 3.3, you can use the code below
  * @en You can add the code below if you want compatibility with versions prior to 3.3
  */
 // Editor.Panel.define = Editor.Panel.define || function(options: any) { return options }
+
+// 定义 Editor.UI.Tree 类型
+declare global {
+    namespace Editor {
+        namespace UI {
+            interface Tree extends HTMLElement {
+                tree: TreeNode[];
+                render(): void;
+            }
+        }
+    }
+}
+
 module.exports = Editor.Panel.define({
     listeners: {
         show() { console.log('show'); },
@@ -18,6 +32,7 @@ module.exports = Editor.Panel.define({
         rightPanel: '.right-panel',
         elementList: '.element-list',
         folderInspect: '#folder-inspect',
+        fileTree: '#file-tree',
     },
     methods: {
         // Handle element item click
@@ -29,6 +44,7 @@ module.exports = Editor.Panel.define({
             }
         },
 
+        // 处理文件夹选择
         async folderInspectConfirm() {
             try {
                 const result = await Editor.Dialog.select({
@@ -39,19 +55,28 @@ module.exports = Editor.Panel.define({
                 });
                 if (result.filePaths && result.filePaths.length > 0) {
                     const selectedPath = result.filePaths[0];
+                    console.log('Selected folder:', selectedPath);
+                    
                     const { ScriptDatabase } = require('../../copdb');
-                    // 使用单例
                     const scriptDB = ScriptDatabase.getInstance();
-                    // Load all TypeScript files from directory
                     scriptDB.loadFromDirectory(selectedPath);
                     
-                    // Get statistics
-                    const stats = scriptDB.getStatistics();
-                    console.log('Script Statistics:', stats);
-                    
-                    // Get all script information
+                    // 获取所有脚本信息并构建树
                     const allScripts = scriptDB.getAllScripts();
-                    console.log('All Scripts:', allScripts);
+                    console.log('Found scripts:', allScripts.length);
+                    
+                    const treeData = buildFileTreeData(allScripts);
+                    console.log('Built tree data:', treeData);
+                    
+                    // 更新树数据
+                    const tree = this.$.fileTree as Editor.UI.Tree;
+                    if (tree) {
+                        tree.tree = treeData;
+                        tree.render();
+                        console.log('Tree rendered');
+                    } else {
+                        console.error('Tree element not found');
+                    }
                 }
             } catch (error) {
                 console.error('Error selecting folder:', error);
@@ -67,8 +92,23 @@ module.exports = Editor.Panel.define({
         if (this.$.elementList) {
             this.$.elementList.addEventListener('click', this.handleElementClick.bind(this));
         }
+        console.log('Panel ready');
+
+        // 初始化文件树
+        const tree = this.$.fileTree as Editor.UI.Tree;
+        if (tree) {
+            initializeFileTree(tree);
+            console.log('File tree initialized');
+        } else {
+            console.error('File tree element not found');
+        }
+
+        // 添加文件夹选择按钮事件监听
         if (this.$.folderInspect) {
-            this.$.folderInspect.addEventListener('confirm', this.folderInspectConfirm.bind(this));
+            this.$.folderInspect.addEventListener('click', this.folderInspectConfirm.bind(this));
+            console.log('Folder inspect button listener added');
+        } else {
+            console.error('Folder inspect button not found');
         }
 
         try {
@@ -102,6 +142,9 @@ module.exports = Editor.Panel.define({
         // Clean up event listeners
         if (this.$.elementList) {
             this.$.elementList.removeEventListener('click', this.handleElementClick.bind(this));
+        }
+        if (this.$.folderInspect) {
+            this.$.folderInspect.removeEventListener('click', this.folderInspectConfirm.bind(this));
         }
     },
 });
