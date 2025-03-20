@@ -12,12 +12,23 @@
         </div>
     </div>
     <div class="right-panel">
-        <div class="content">
-            <h2>腳本分析</h2>
-            <div class="detail-section">
-                <!-- 这里将显示选中脚本的详细信息 -->
+        <ui-tab value="0">
+            <ui-button active>包體</ui-button>
+            <ui-button>腳本分析</ui-button>
+        </ui-tab>
+        <div class="tab-content">
+            <div class="content bundle-content">
+                <h2>包體資訊</h2>
+                <div class="detail-section">
+                    <!-- 这里将显示包体信息 -->
+                </div>
             </div>
-            <!-- 可以继续添加更多示例内容 -->
+            <div class="content script-content" style="display: none;">
+                <h2>腳本分析</h2>
+                <div class="detail-section">
+                    <!-- 这里将显示选中脚本的详细信息 -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
