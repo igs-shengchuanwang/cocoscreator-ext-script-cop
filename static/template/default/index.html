@@ -1,7 +1,7 @@
 <div class="container">
     <div class="left-panel">
-        <ui-tab class="tab-header">
-            <ui-button>腳本警察</ui-button>
+        <ui-tab class="tab-header" value="0">
+            <ui-button active>腳本警察</ui-button>
             <ui-button>包體警察</ui-button>
         </ui-tab>
         <div class="tab-container">
@@ -16,11 +16,8 @@
             </div>
             <div class="content-page" hidden>
                 <h2>包體警察</h2>
-                <div class="detail-section">
-                    <h3>包體資訊</h3>
-                    <div class="code-block">
-                        <pre><code>包體警察內容</code></pre>
-                    </div>
+                <div id="bundle-sections" class="bundle-sections">
+                    <!-- bundle sections will be created dynamically -->
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 import { buildFileTreeData, initializeFileTree, TreeNode } from '../inspect/script-tree';
+import { createBundleSectionManager } from '../inspect/bundles-sections';
 /**
  * @zh If you want compatibility with versions prior to 3.3, you can use the code below
  * @en You can add the code below if you want compatibility with versions prior to 3.3
@@ -35,6 +36,7 @@ module.exports = Editor.Panel.define({
         fileTree: '#file-tree',
         leftTab: '.left-panel ui-tab',
         tabContainer: '.left-panel .tab-container',
+        bundleSections: '#bundle-sections',
     },
     methods: {
         // Handle element item click
@@ -92,31 +94,60 @@ module.exports = Editor.Panel.define({
         // 处理标签页切换
         handleTabChange(event: Event) {
             const target = event.target as HTMLElement;
-            const tab = this.$.leftTab;
-            const container = this.$.tabContainer;
-            if (!tab || !container) return;
+            if (!target || !this.$.leftTab || !this.$.tabContainer) return;
 
-            const buttons = tab.querySelectorAll('ui-button');
-            const pages = container.querySelectorAll('.content-page');
-            const index = Array.from(buttons).indexOf(target);
+            // 获取所有按钮和页面
+            const buttons = this.$.leftTab.querySelectorAll('ui-button');
+            const pages = this.$.tabContainer.querySelectorAll('.content-page');
+            
+            // 确定点击的是哪个按钮
+            let index = -1;
+            buttons.forEach((btn, i) => {
+                if (btn === target) {
+                    index = i;
+                    btn.setAttribute('active', '');
+                } else {
+                    btn.removeAttribute('active');
+                }
+            });
 
-            if (index >= 0) {
-                // 更新按钮状态
-                buttons.forEach((btn, i) => {
-                    if (i === index) {
-                        btn.setAttribute('active', '');
-                    } else {
-                        btn.removeAttribute('active');
+            if (index === -1) return;
+
+            // 更新页面显示
+            pages.forEach((page, i) => {
+                if (i === index) {
+                    page.removeAttribute('hidden');
+                    // 如果切换到包体警察标签，更新内容
+                    if (i === 1) {
+                        console.log('Switching to bundle police tab');
+                        this.updateBundlePoliceContent();
                     }
-                });
+                } else {
+                    page.setAttribute('hidden', '');
+                }
+            });
+        },
 
-                // 更新内容显示
-                pages.forEach((page, i) => {
-                    if (i === index) {
-                        page.removeAttribute('hidden');
-                    } else {
-                        page.setAttribute('hidden', '');
-                    }
+        // 更新包體警察內容
+        async updateBundlePoliceContent() {
+            try {
+                console.log('Updating bundle police content');
+                const { ScriptDatabase } = require('../../copdb');
+                const scriptDB = ScriptDatabase.getInstance();
+                await scriptDB.loadBundles(join(Editor.Project.path, 'assets'));
+                const allBundles = scriptDB.getAllBundles();
+                console.log('Got bundles:', allBundles);
+
+                // 使用 bundle sections manager 更新顯示
+                if (this.$.bundleSections) {
+                    const manager = createBundleSectionManager(this.$.bundleSections);
+                    manager.updateDisplay(allBundles);
+                }
+            } catch (error) {
+                console.error('Error updating bundle police content:', error);
+                Editor.Message.broadcast('editor-notify', {
+                    type: 'error',
+                    message: '更新包體資訊時發生錯誤'
                 });
             }
         },
@@ -156,26 +187,16 @@ module.exports = Editor.Panel.define({
         }
 
         try {
-            // 获取项目 assets 路径
-            const projectPath = Editor.Project.path;
-            const assetsPath = join(projectPath, 'assets');
-            // 获取 ScriptDatabase 单例并初始化
+            // 初始化 ScriptDatabase
             const { ScriptDatabase } = require('../../copdb');
             const scriptDB = ScriptDatabase.getInstance();
-            scriptDB.initialize(projectPath);
-            // 加载 bundles
-            await scriptDB.loadBundles(assetsPath);
-            // 获取并显示 bundle 统计信息
-            const bundleStats = scriptDB.getBundleStatistics();
-            console.log('Bundle Statistics:', bundleStats);
-            // 获取所有 bundle 信息
-            const allBundles = scriptDB.getAllBundles();
-            console.log('All Bundles:', allBundles);
+            scriptDB.initialize(Editor.Project.path);
+            console.log('ScriptDatabase initialized');
         } catch (error) {
-            console.error('Error initializing bundles:', error);
+            console.error('Error initializing ScriptDatabase:', error);
             Editor.Message.broadcast('editor-notify', {
                 type: 'error',
-                message: '初始化 bundle 信息時發生錯誤'
+                message: '初始化資料庫時發生錯誤'
             });
         }
     },
