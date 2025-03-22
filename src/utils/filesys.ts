@@ -70,8 +70,8 @@ export function isTypeScriptFile(filePath: string): boolean {
 export interface BundleInfo {
     dirInfo: DirectoryInfo;
     name: string;
-    priority: number;
     configName?: string;
+    assetMeta?: any;
 }
 
 /**
@@ -181,6 +181,7 @@ export async function isBundleDirectory(dirPath: string): Promise<boolean> {
  */
 export async function findBundles(assetsPath: string): Promise<BundleInfo[]> {
     const bundles: BundleInfo[] = [];
+    const projectPath = Editor.Project.path + '/assets';
     
     try {
         const items = await fs.readdir(assetsPath);
@@ -192,12 +193,30 @@ export async function findBundles(assetsPath: string): Promise<BundleInfo[]> {
                 if (isBundle) {
                     const dirInfo = getDirectoryInfo(fullPath);
                     if (dirInfo) {
-                        bundles.push({
-                            dirInfo,
-                            name: item,
-                            priority: 0, // 默认优先级
-                            configName: `bundle-${item}` // 默认配置名
-                        });
+                        // 获取相对于 assets 目录的路径
+                        const relativePath = path.relative(projectPath, fullPath);
+                        // 构建资源 URL
+                        const assetUrl = `db://assets/${relativePath}`;
+                        try {
+                            // 查询资源信息
+                            const metaInfo = await Editor.Message.request('asset-db', 'query-asset-meta', assetUrl);
+                            console.log(`Bundle AssetMeta for ${item}:`, metaInfo);
+                            
+                            bundles.push({
+                                dirInfo,
+                                name: item,
+                                configName: `bundle-${item}`, // 默认配置名
+                                assetMeta: metaInfo // 添加资源信息
+                            });
+                        } catch (error) {
+                            console.error(`Error querying asset info for ${assetUrl}:`, error);
+                            // 即使获取资源信息失败，仍然添加基本的包体信息
+                            bundles.push({
+                                dirInfo,
+                                name: item,
+                                configName: `bundle-${item}`
+                            });
+                        }
                     }
                 }
                 

@@ -92,7 +92,7 @@ module.exports = Editor.Panel.define({
         },
 
         // 处理标签页切换
-        handleTabChange(event: Event) {
+        async handleTabChange(event: Event) {
             const target = event.target as HTMLElement;
             if (!target || !this.$.leftTab || !this.$.tabContainer) return;
 
@@ -114,13 +114,13 @@ module.exports = Editor.Panel.define({
             if (index === -1) return;
 
             // 更新页面显示
-            pages.forEach((page, i) => {
+            pages.forEach(async (page, i) => {
                 if (i === index) {
                     page.removeAttribute('hidden');
                     // 如果切换到包体警察标签，更新内容
                     if (i === 1) {
                         console.log('Switching to bundle police tab');
-                        this.updateBundlePoliceContent();
+                        await this.updateBundlePoliceContent();
                     }
                 } else {
                     page.setAttribute('hidden', '');
@@ -180,9 +180,9 @@ module.exports = Editor.Panel.define({
         if (this.$.leftTab) {
             const buttons = this.$.leftTab.querySelectorAll('ui-button');
             buttons.forEach(button => {
-                button.addEventListener('click', this.handleTabChange.bind(this));
+                button.addEventListener('click', async (e) => await this.handleTabChange(e));
             });
-            this.$.leftTab.addEventListener('select', this.handleTabChange.bind(this));
+            this.$.leftTab.addEventListener('select', async (e) => await this.handleTabChange(e));
             console.log('Tab listener added');
         }
 
