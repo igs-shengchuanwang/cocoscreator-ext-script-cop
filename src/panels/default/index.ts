@@ -33,9 +33,6 @@ module.exports = Editor.Panel.define({
         elementList: '.element-list',
         folderInspect: '#folder-inspect',
         fileTree: '#file-tree',
-        bundleContent: '.bundle-content',
-        scriptContent: '.script-content',
-        uiTab: 'ui-tab',
     },
     methods: {
         // Handle element item click
@@ -44,25 +41,6 @@ module.exports = Editor.Panel.define({
             if (target.classList.contains('element-item')) {
                 // Process element click
                 console.log('Clicked element:', target.textContent);
-            }
-        },
-
-        // 处理标签页切换
-        handleTabChange(event: Event) {
-            const target = event.target as HTMLElement & { value: string };
-            const value = target.value;
-            
-            // 隐藏所有内容
-            if (this.$.bundleContent && this.$.scriptContent) {
-                this.$.bundleContent.classList.remove('active');
-                this.$.scriptContent.classList.remove('active');
-                
-                // 显示选中的内容
-                if (value === '0') {
-                    this.$.bundleContent.classList.add('active');
-                } else {
-                    this.$.scriptContent.classList.add('active');
-                }
             }
         },
 
@@ -133,15 +111,6 @@ module.exports = Editor.Panel.define({
             console.error('Folder inspect button not found');
         }
 
-        // 添加标签页切换事件监听
-        if (this.$.uiTab) {
-            this.$.uiTab.addEventListener('change', this.handleTabChange.bind(this));
-            // 初始化显示第一个标签页
-            if (this.$.bundleContent) {
-                this.$.bundleContent.classList.add('active');
-            }
-        }
-
         try {
             // 获取项目 assets 路径
             const projectPath = Editor.Project.path;
@@ -176,9 +145,6 @@ module.exports = Editor.Panel.define({
         }
         if (this.$.folderInspect) {
             this.$.folderInspect.removeEventListener('click', this.folderInspectConfirm.bind(this));
-        }
-        if (this.$.uiTab) {
-            this.$.uiTab.removeEventListener('change', this.handleTabChange.bind(this));
         }
     },
 });

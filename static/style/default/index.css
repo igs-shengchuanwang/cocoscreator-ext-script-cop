@@ -31,9 +31,6 @@
     padding: 16px;
     overflow-y: auto;
     background-color: var(--color-normal-fill-emphasis);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
 }
 
 /* 搜索区域样式 */
@@ -79,20 +76,6 @@
 
 #file-tree .item > .text {
     margin-left: 4px;
-}
-
-/* 标签页内容样式 */
-.tab-content {
-    flex: 1;
-    overflow-y: auto;
-}
-
-.tab-content .content {
-    display: none;
-}
-
-.tab-content .content.active {
-    display: block;
 }
 
 /* 右侧内容样式 */
