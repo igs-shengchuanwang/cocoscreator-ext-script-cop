@@ -1,14 +1,28 @@
 <div class="container">
     <div class="left-panel">
-        <div class="search-section">
-            <ui-button id="folder-inspect">
-                <ui-icon value="search"></ui-icon>
-                選擇資料夾檢查腳本
-            </ui-button>
-            <ui-tree id="file-tree"></ui-tree>
-        </div>
-        <div class="element-list">
-            <!-- 其他元素 -->
+        <ui-tab class="tab-header">
+            <ui-button>腳本警察</ui-button>
+            <ui-button>包體警察</ui-button>
+        </ui-tab>
+        <div class="tab-container">
+            <div class="content-page">
+                <div class="search-section">
+                    <ui-button id="folder-inspect">
+                        <ui-icon value="search"></ui-icon>
+                        選擇資料夾檢查腳本
+                    </ui-button>
+                </div>
+                <ui-tree id="file-tree"></ui-tree>
+            </div>
+            <div class="content-page" hidden>
+                <h2>包體警察</h2>
+                <div class="detail-section">
+                    <h3>包體資訊</h3>
+                    <div class="code-block">
+                        <pre><code>包體警察內容</code></pre>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="right-panel">

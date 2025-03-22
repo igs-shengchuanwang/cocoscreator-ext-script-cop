@@ -33,6 +33,8 @@ module.exports = Editor.Panel.define({
         elementList: '.element-list',
         folderInspect: '#folder-inspect',
         fileTree: '#file-tree',
+        leftTab: '.left-panel ui-tab',
+        tabContainer: '.left-panel .tab-container',
     },
     methods: {
         // Handle element item click
@@ -85,7 +87,39 @@ module.exports = Editor.Panel.define({
                     message: 'Error occurred while selecting folder'
                 });
             }
-        }
+        },
+
+        // 处理标签页切换
+        handleTabChange(event: Event) {
+            const target = event.target as HTMLElement;
+            const tab = this.$.leftTab;
+            const container = this.$.tabContainer;
+            if (!tab || !container) return;
+
+            const buttons = tab.querySelectorAll('ui-button');
+            const pages = container.querySelectorAll('.content-page');
+            const index = Array.from(buttons).indexOf(target);
+
+            if (index >= 0) {
+                // 更新按钮状态
+                buttons.forEach((btn, i) => {
+                    if (i === index) {
+                        btn.setAttribute('active', '');
+                    } else {
+                        btn.removeAttribute('active');
+                    }
+                });
+
+                // 更新内容显示
+                pages.forEach((page, i) => {
+                    if (i === index) {
+                        page.removeAttribute('hidden');
+                    } else {
+                        page.setAttribute('hidden', '');
+                    }
+                });
+            }
+        },
     },
     async ready() {
         // 添加事件监听
@@ -109,6 +143,16 @@ module.exports = Editor.Panel.define({
             console.log('Folder inspect button listener added');
         } else {
             console.error('Folder inspect button not found');
+        }
+
+        // 添加标签页切换事件监听
+        if (this.$.leftTab) {
+            const buttons = this.$.leftTab.querySelectorAll('ui-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', this.handleTabChange.bind(this));
+            });
+            this.$.leftTab.addEventListener('select', this.handleTabChange.bind(this));
+            console.log('Tab listener added');
         }
 
         try {
@@ -145,6 +189,9 @@ module.exports = Editor.Panel.define({
         }
         if (this.$.folderInspect) {
             this.$.folderInspect.removeEventListener('click', this.folderInspectConfirm.bind(this));
+        }
+        if (this.$.leftTab) {
+            this.$.leftTab.removeEventListener('select', this.handleTabChange.bind(this));
         }
     },
 });

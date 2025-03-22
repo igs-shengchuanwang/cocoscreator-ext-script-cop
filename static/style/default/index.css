@@ -20,26 +20,42 @@
     width: 400px;
     background-color: var(--color-normal-fill);
     border-right: 1px solid var(--color-normal-border);
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
 
-/* 右侧面板 */
-.right-panel {
+.tab-header {
+    border-bottom: 1px solid var(--color-normal-border);
+    padding: 4px;
+}
+
+.tab-header ui-button {
+    margin-right: 8px;
+}
+
+.tab-container {
     flex: 1;
-    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
-    background-color: var(--color-normal-fill-emphasis);
+    padding: 16px;
+}
+
+.content-page[hidden] {
+    display: none;
 }
 
 /* 搜索区域样式 */
 .search-section {
-    padding: 16px;
     border-bottom: 1px solid var(--color-normal-border);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    margin-bottom: 16px;
 }
 
 #folder-inspect {
@@ -51,7 +67,7 @@
 }
 
 #file-tree {
-    height: calc(100vh - 120px);
+    flex: 1;
     border: 1px solid var(--color-normal-border);
     border-radius: 4px;
     overflow-y: auto;
@@ -148,4 +164,12 @@
 
 .search-button:hover {
     background-color: #383838;
+}
+
+/* 右侧面板 */
+.right-panel {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background-color: var(--color-normal-fill-emphasis);
 }

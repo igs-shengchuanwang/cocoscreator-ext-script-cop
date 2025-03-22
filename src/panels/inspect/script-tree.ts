@@ -178,12 +178,15 @@ export function initializeFileTree(tree: Editor.UI.Tree) {
         .item {
             padding: 4px 8px;
             cursor: pointer;
+            border-bottom: 1px solid var(--color-normal-border);
+            margin-bottom: 1px;
         }
         .item:hover {
             background: var(--color-fill-2);
         }
         .text > .name {
             margin-left: 8px;
+            color: var(--color-normal-text);
         }
         .item > .left {
             width: 16px;
@@ -193,6 +196,10 @@ export function initializeFileTree(tree: Editor.UI.Tree) {
         }
         .item > .arrow {
             width: 16px;
+        }
+        ui-tree {
+            background: var(--color-normal-fill);
+            border: 1px solid var(--color-normal-border);
         }
     `;
 
