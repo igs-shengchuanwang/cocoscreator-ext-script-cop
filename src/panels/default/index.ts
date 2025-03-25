@@ -63,8 +63,8 @@ module.exports = Editor.Panel.define({
                     
                     const { ScriptDatabase } = require('../../copdb');
                     const scriptDB = ScriptDatabase.getInstance();
-                    scriptDB.loadFromDirectory(selectedPath);
-                    // 获取所有脚本信息并构建树
+                    scriptDB.loadFromDirectory(selectedPath, true);
+                    // 获取所有脚本信息并构建树，清除舊資料重建 tree
                     const allScripts = scriptDB.getAllScripts();
                     console.log('Found scripts:', allScripts.length);
                     const treeData = buildFileTreeData(allScripts);

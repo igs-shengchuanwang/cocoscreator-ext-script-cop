@@ -54,7 +54,9 @@ declare global {
 // 构建文件树数据
 export function buildFileTreeData(scripts: ScriptInfo[]): TreeNode[] {
     const treeData: TreeNode[] = [];
+    treeData.length = 0;
     const pathMap = new Map<string, TreeNode>();
+    pathMap.clear();
     // 获取项目路径和 assets 路径
     const projectPath = Editor.Project.path;
     const assetsPath = join(projectPath, 'assets');
