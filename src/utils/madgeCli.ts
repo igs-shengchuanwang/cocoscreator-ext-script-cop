@@ -18,19 +18,16 @@ interface MadgeResult {
  * @returns 包含檢查結果的對象
  */
 export async function checkCircular(targetPath: string): Promise<MadgeResult> {
+    const circularDeps: string[] = [];
     try {
         // 確保路徑是絕對路徑
         const absolutePath = path.resolve(targetPath);
-        
         // 構建 madge 命令
-        const command = `npx madge@5.0.1 --circular --extensions ts "${absolutePath}"`;
+        const command = `madge --circular --extensions ts "${absolutePath}"`;
         console.log('Executing command:', command);
-
         // 執行命令
         const { stdout, stderr } = await execAsync(command);
-        
         // 解析輸出結果
-        const circularDeps: string[] = [];
         if (stdout) {
             // madge 會將循環依賴信息輸出到 stdout
             const lines = stdout.split('\n');
@@ -40,7 +37,6 @@ export async function checkCircular(targetPath: string): Promise<MadgeResult> {
                 }
             }
         }
-
         return {
             success: true,
             circularDeps,
@@ -49,16 +45,24 @@ export async function checkCircular(targetPath: string): Promise<MadgeResult> {
         };
     } catch (error) {
         console.error('Error checking circular dependencies:', error);
-        
         // 處理錯誤情況
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         const errorOutput = error instanceof Error && 'stderr' in error ? (error as any).stderr : '';
-        
+        const stdoutInErr = error instanceof Error && 'stdout' in error ? (error as any).stdout : '';
+        if (stdoutInErr) {
+            // madge 會將錯誤信息輸出到 stderr
+            const lines = stdoutInErr.split('\n');
+            for (const line of lines) {
+                if (line.trim() && line.includes('Circular')) {
+                    circularDeps.push(line.trim());
+                }
+            }
+        }
         return {
             success: false,
             circularDeps: [],
             error: errorMessage,
-            stderr: errorOutput
+            stderr: errorOutput,
         };
     }
 }
