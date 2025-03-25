@@ -70,9 +70,11 @@ export class ScriptDatabase {
      * Load all TypeScript files from specified directory
      * @param dirPath Directory path
      */
-    public loadFromDirectory(dirPath: string): void {
+    public loadFromDirectory(dirPath: string, re: boolean): void {
+        if (re) {
+            this.scripts.clear();
+        }
         const tsFiles = findTsFiles(dirPath);
-        
         for (const filePath of tsFiles) {
             const fileInfo = getFileInfo(filePath);
             if (fileInfo) {
@@ -87,7 +89,6 @@ export class ScriptDatabase {
      */
     private addScript(fileInfo: FileInfo): void {
         const relativePath = path.relative(this.projectRoot, fileInfo.path);
-        
         const scriptInfo: ScriptInfo = {
             ...fileInfo,
             relativePath,
@@ -96,7 +97,6 @@ export class ScriptDatabase {
             dependencies: [],
             bundleName: ''
         };
-
         this.scripts.set(fileInfo.path, scriptInfo);
     }
 

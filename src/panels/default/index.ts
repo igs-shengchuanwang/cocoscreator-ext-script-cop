@@ -64,14 +64,11 @@ module.exports = Editor.Panel.define({
                     const { ScriptDatabase } = require('../../copdb');
                     const scriptDB = ScriptDatabase.getInstance();
                     scriptDB.loadFromDirectory(selectedPath);
-                    
                     // 获取所有脚本信息并构建树
                     const allScripts = scriptDB.getAllScripts();
                     console.log('Found scripts:', allScripts.length);
-                    
                     const treeData = buildFileTreeData(allScripts);
                     console.log('Built tree data:', treeData);
-                    
                     // 更新树数据
                     const tree = this.$.fileTree as Editor.UI.Tree;
                     if (tree) {
@@ -81,6 +78,13 @@ module.exports = Editor.Panel.define({
                     } else {
                         console.error('Tree element not found');
                     }
+
+                    // 檢查循環依賴
+                    console.log('Start checking circular dependency');
+                    const { checkCircular, dumpMadgeResult } = require('../../utils/madgeCli');
+                    const circularResult = await checkCircular(selectedPath);
+                    console.log('Circular dependency check result:');
+                    console.log(dumpMadgeResult(circularResult));
                 }
             } catch (error) {
                 console.error('Error selecting folder:', error);
