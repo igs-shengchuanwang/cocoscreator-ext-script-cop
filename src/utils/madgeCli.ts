@@ -49,20 +49,25 @@ export async function checkCircular(targetPath: string): Promise<MadgeResult> {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         const errorOutput = error instanceof Error && 'stderr' in error ? (error as any).stderr : '';
         const stdoutInErr = error instanceof Error && 'stdout' in error ? (error as any).stdout : '';
+        // 從錯誤輸出中提取循環依賴信息
         if (stdoutInErr) {
-            // madge 會將錯誤信息輸出到 stderr
             const lines = stdoutInErr.split('\n');
             for (const line of lines) {
-                if (line.trim() && line.includes('Circular')) {
-                    circularDeps.push(line.trim());
+                if (line.trim() && line.includes(')')) {
+                    // 匹配類似 "1) LoadingPageEx.ts > app.ts" 的格式
+                    const match = line.match(/\d+\)\s+(.+)/);
+                    if (match) {
+                        circularDeps.push(match[1].trim());
+                    }
                 }
             }
         }
         return {
-            success: false,
-            circularDeps: [],
+            success: circularDeps.length > 0, // 如果找到循環依賴，也算成功
+            circularDeps,
             error: errorMessage,
             stderr: errorOutput,
+            stdout: stdoutInErr
         };
     }
 }
@@ -74,11 +79,9 @@ export async function checkCircular(targetPath: string): Promise<MadgeResult> {
  */
 export function dumpMadgeResult(result: MadgeResult): string {
     const lines: string[] = [];
-    
     // 添加基本信息
     lines.push('=== Madge 循環依賴檢查結果 ===');
     lines.push(`檢查狀態: ${result.success ? '成功' : '失敗'}`);
-    
     // 如果有錯誤信息，添加錯誤詳情
     if (!result.success) {
         lines.push('\n--- 錯誤信息 ---');
@@ -89,7 +92,6 @@ export function dumpMadgeResult(result: MadgeResult): string {
             lines.push(`錯誤輸出: ${result.stderr}`);
         }
     }
-    
     // 添加循環依賴信息
     lines.push('\n--- 循環依賴信息 ---');
     if (result.circularDeps.length > 0) {
@@ -99,12 +101,10 @@ export function dumpMadgeResult(result: MadgeResult): string {
     } else {
         lines.push('未發現循環依賴');
     }
-    
     // 如果有標準輸出，添加完整輸出
     if (result.stdout) {
         lines.push('\n--- 完整輸出 ---');
         lines.push(result.stdout);
     }
-    
     return lines.join('\n');
 }
