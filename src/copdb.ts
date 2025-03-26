@@ -66,6 +66,29 @@ export class ScriptDatabase {
         this.scripts.clear();
     }
 
+    analyzeCircularDependencyIssue(circDep: string) {
+        // 分割依賴路徑，格式如: "LoadingPageEx.ts > app.ts"
+        // 分割文件路徑
+        const files = circDep.split(' > ').map(f => f.trim());
+        // 為每個文件添加循環依賴問題
+        files.forEach(filePath => {
+            // 查找對應的腳本
+            const script = Array.from(this.scripts.values()).find(s => 
+                s.relativePath === filePath || s.path.endsWith(filePath)
+            );
+            if (script) {
+                // 添加循環依賴問題
+                script.issues.push({
+                    type: '循環引用',
+                    severity: 'warning',
+                    message: `循環依賴: ${circDep}`,
+                    line: 0  // 循環依賴問題通常與特定行無關
+                });
+                console.log(`Found circular dependency issue for ${filePath}: ${circDep}`);
+            }
+        });
+    }
+
     /**
      * Load all TypeScript files from specified directory
      * @param dirPath Directory path

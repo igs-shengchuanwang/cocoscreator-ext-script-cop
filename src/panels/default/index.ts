@@ -67,6 +67,22 @@ module.exports = Editor.Panel.define({
                     // 获取所有脚本信息并构建树，清除舊資料重建 tree
                     const allScripts = scriptDB.getAllScripts();
                     console.log('Found scripts:', allScripts.length);
+                    
+                    // 檢查循環依賴
+                    console.log('Start checking circular dependency');
+                    const { checkCircular, dumpMadgeResult } = require('../../utils/madgeCli');
+                    const circularResult = await checkCircular(selectedPath);
+                    console.log('Circular dependency check result:');
+                    console.log(dumpMadgeResult(circularResult));
+
+                    // 處理循環依賴結果
+                    let dependencies = circularResult.circularDeps as string[];
+                    if (dependencies) {
+                        dependencies.forEach(cd => {
+                            scriptDB.analyzeCircularDependencyIssue(cd);
+                        });
+                    }
+
                     const treeData = buildFileTreeData(allScripts);
                     console.log('Built tree data:', treeData);
                     // 更新树数据
@@ -78,13 +94,6 @@ module.exports = Editor.Panel.define({
                     } else {
                         console.error('Tree element not found');
                     }
-
-                    // 檢查循環依賴
-                    console.log('Start checking circular dependency');
-                    const { checkCircular, dumpMadgeResult } = require('../../utils/madgeCli');
-                    const circularResult = await checkCircular(selectedPath);
-                    console.log('Circular dependency check result:');
-                    console.log(dumpMadgeResult(circularResult));
                 }
             } catch (error) {
                 console.error('Error selecting folder:', error);

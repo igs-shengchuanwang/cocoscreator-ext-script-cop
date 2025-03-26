@@ -4,7 +4,7 @@ import * as path from 'path';
 
 const execAsync = promisify(exec);
 
-interface MadgeResult {
+export interface MadgeResult {
     success: boolean;
     circularDeps: string[];
     error?: string;
