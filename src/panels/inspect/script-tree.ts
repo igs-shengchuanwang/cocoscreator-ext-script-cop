@@ -8,6 +8,7 @@ export interface ScriptInfo {
     size: number;
     lastModified: Date;
     dependencies: string[];
+    issues?: string[];
 }
 
 // 定义树节点接口
@@ -17,10 +18,12 @@ export interface TreeNode {
         checked: boolean;
         path?: string;
         disabled?: boolean;
+        hasIssues?: boolean;
     };
     showArrow?: boolean;
     children: TreeNode[];
     index?: number;
+    scriptInfo?: ScriptInfo;
 }
 
 // 定义 UI 图标元素接口
@@ -93,9 +96,11 @@ export function buildFileTreeData(scripts: ScriptInfo[]): TreeNode[] {
                         value: part,
                         checked: false,
                         path: currentPath,
+                        hasIssues: i === parts.length - 1 && script.issues && script.issues.length > 0
                     },
                     children: [],
                     index,
+                    scriptInfo: i === parts.length - 1 ? script : undefined
                 };
                 pathMap.set(currentPath, node);
                 if (i === parts.length - 1) {
@@ -132,7 +137,9 @@ export function initializeFileTree(tree: Editor.UI.Tree) {
     });
     tree.setRender('left', ($left: TreeElement, data: TreeNode) => {
         if ($left.$icon) {
-            if (data.showArrow) {
+            if (data.detail.hasIssues) {
+                $left.$icon.value = 'warn';
+            } else if (data.showArrow) {
                 $left.$icon.value = 'folder';
             } else {
                 $left.$icon.value = 'file';
@@ -192,6 +199,10 @@ export function initializeFileTree(tree: Editor.UI.Tree) {
         ui-tree {
             background: var(--color-normal-fill);
             border: 1px solid var(--color-normal-border);
+        }
+        /* 警告圖標樣式 */
+        .item > .left ui-icon[value="warn"] {
+            color: #FFB800;
         }
     `;
 
