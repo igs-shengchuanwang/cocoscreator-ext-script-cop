@@ -193,7 +193,7 @@ module.exports = Editor.Panel.define({
         if (this.$.leftTab) {
             const buttons = this.$.leftTab.querySelectorAll('ui-button');
             buttons.forEach(button => {
-                button.addEventListener('click', async (e) => await this.handleTabChange(e));
+                button.addEventListener('confirm', async (e) => await this.handleTabChange(e));
             });
             this.$.leftTab.addEventListener('select', async (e) => await this.handleTabChange(e));
             console.log('Tab listener added');
