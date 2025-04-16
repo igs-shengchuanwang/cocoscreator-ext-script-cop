@@ -107,11 +107,12 @@ module.exports = Editor.Panel.define({
         // 处理标签页切换
         async handleTabChange(event: Event) {
             const target = event.target as HTMLElement;
-            if (!target || !this.$.leftTab || !this.$.tabContainer) return;
+            if (!target || !this.$.leftTab || !this.$.tabContainer || !this.$.rightPanel) return;
 
             // 获取所有按钮和页面
             const buttons = this.$.leftTab.querySelectorAll('ui-button');
             const pages = this.$.tabContainer.querySelectorAll('.content-page');
+            const rightContents = this.$.rightPanel.querySelectorAll('.content');
             
             // 确定点击的是哪个按钮
             let index = -1;
@@ -126,7 +127,7 @@ module.exports = Editor.Panel.define({
 
             if (index === -1) return;
 
-            // 更新页面显示
+            // 更新左側页面显示
             pages.forEach(async (page, i) => {
                 if (i === index) {
                     page.removeAttribute('hidden');
@@ -137,6 +138,15 @@ module.exports = Editor.Panel.define({
                     }
                 } else {
                     page.setAttribute('hidden', '');
+                }
+            });
+
+            // 更新右側内容显示
+            rightContents.forEach((content, i) => {
+                if (i === index) {
+                    (content as HTMLElement).style.display = 'block';
+                } else {
+                    (content as HTMLElement).style.display = 'none';
                 }
             });
         },
