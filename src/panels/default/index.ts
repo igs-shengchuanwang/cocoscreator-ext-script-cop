@@ -157,7 +157,7 @@ module.exports = Editor.Panel.define({
                 console.log('Updating bundle police content');
                 const { ScriptDatabase } = require('../../copdb');
                 const scriptDB = ScriptDatabase.getInstance();
-                await scriptDB.loadBundles(join(Editor.Project.path, 'assets'));
+                await scriptDB.loadBundles(join(Editor.Project.path, 'assets'), false);
                 const allBundles = scriptDB.getAllBundles();
                 console.log('Got bundles:', allBundles);
 

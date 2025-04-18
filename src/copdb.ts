@@ -198,7 +198,10 @@ export class ScriptDatabase {
      * 加载所有 bundle 信息
      * @param assetsPath assets 目录路径
      */
-    public async loadBundles(assetsPath: string): Promise<void> {
+    public async loadBundles(assetsPath: string, re: boolean): Promise<void> {
+        if (!re && this.bundles.size > 0) {
+            return;
+        }
         try {
             const bundles = await findBundles(assetsPath);
             // 清空现有 bundles
