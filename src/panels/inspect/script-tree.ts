@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 
 // 定义脚本信息接口

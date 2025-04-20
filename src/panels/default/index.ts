@@ -2,6 +2,7 @@ import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 import { buildFileTreeData, initializeFileTree, TreeNode } from '../inspect/script-tree';
 import { createBundleSectionManager } from '../inspect/bundles-sections';
+import { readFileContent } from '../../utils/filesys';
 /**
  * @zh If you want compatibility with versions prior to 3.3, you can use the code below
  * @en You can add the code below if you want compatibility with versions prior to 3.3
@@ -180,14 +181,18 @@ module.exports = Editor.Panel.define({
         handleFileTreeClick(event: Event) {
             const customEvt = event as CustomEvent<TreeNode>;
             const node = customEvt.detail;
-            const rel = node.detail.path!;
-            const full = join(Editor.Project.path, rel);
+            const filePath = node.detail.path!;
             try {
-                //const content = readFileSync(full, 'utf-8');
-                const ext = rel.split('.').pop()?.toLowerCase();
-                const lang = ext === 'json' ? 'json' : 'typescript';
+                const content = readFileContent(filePath);
+                const ext = filePath.split('.').pop()?.toLowerCase();
+                let lang = 'typescript';
+                if (ext === 'js') {
+                    lang = 'javascript';
+                } else if (ext === 'json') {
+                    lang = 'json';
+                }
                 const codeEl = this.$.rightDetailSourceCode as HTMLElement;
-                //codeEl.textContent = content;
+                codeEl.textContent = content;
                 codeEl.setAttribute('language', lang);
             } catch (err) {
                 console.error('Failed to load file content:', err);
