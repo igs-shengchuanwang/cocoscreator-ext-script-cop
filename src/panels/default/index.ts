@@ -37,6 +37,7 @@ module.exports = Editor.Panel.define({
         leftTab: '.left-panel ui-tab',
         tabContainer: '.left-panel .tab-container',
         bundleSections: '#bundle-sections',
+        rightDetailSourceCode: '#right-detail-source-code',
     },
     methods: {
         // Handle element item click
@@ -174,6 +175,24 @@ module.exports = Editor.Panel.define({
                 });
             }
         },
+
+        // 高亮選中檔案樹節點並載入原始碼
+        handleFileTreeClick(event: Event) {
+            const customEvt = event as CustomEvent<TreeNode>;
+            const node = customEvt.detail;
+            const rel = node.detail.path!;
+            const full = join(Editor.Project.path, rel);
+            try {
+                //const content = readFileSync(full, 'utf-8');
+                const ext = rel.split('.').pop()?.toLowerCase();
+                const lang = ext === 'json' ? 'json' : 'typescript';
+                const codeEl = this.$.rightDetailSourceCode as HTMLElement;
+                //codeEl.textContent = content;
+                codeEl.setAttribute('language', lang);
+            } catch (err) {
+                console.error('Failed to load file content:', err);
+            }
+        },
     },
     async ready() {
         // 添加事件监听
@@ -187,6 +206,8 @@ module.exports = Editor.Panel.define({
         if (tree) {
             initializeFileTree(tree);
             console.log('File tree initialized');
+            // 使用自定義事件綁定選中節點
+            tree.addEventListener('item-click', this.handleFileTreeClick.bind(this));
         } else {
             console.error('File tree element not found');
         }

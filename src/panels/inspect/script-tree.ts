@@ -163,11 +163,16 @@ export function initializeFileTree(tree: Editor.UI.Tree) {
 
     // 设置项目模板
     tree.setTemplateInit('item', ($div: TreeElement) => {
-        $div.addEventListener('click', (event: MouseEvent) => {
+        $div.addEventListener('click', () => {
             const data = $div.data;
             if (data?.detail.path) {
                 console.log('Selected file:', data.detail.path);
-                // TODO: 触发文件选择事件
+                // 使用内建单选：先清空旧选择，再选中当前，最后渲染
+                tree.clear();
+                tree.select(data);
+                tree.render();
+                // 派发自定义事件，供监听
+                tree.dispatchEvent(new CustomEvent('item-click', { detail: data }));
             }
         });
     });
