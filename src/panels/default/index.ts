@@ -2,7 +2,9 @@ import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 import { buildFileTreeData, initializeFileTree, TreeNode } from '../inspect/script-tree';
 import { createBundleSectionManager } from '../inspect/bundles-sections';
-import { readFileContent } from '../../utils/filesys';
+import { readFileContent, queryAssetInfo } from '../../utils/filesys';
+import * as path from 'path';
+import { ScriptDatabase } from '../../copdb';
 /**
  * @zh If you want compatibility with versions prior to 3.3, you can use the code below
  * @en You can add the code below if you want compatibility with versions prior to 3.3
@@ -39,6 +41,8 @@ module.exports = Editor.Panel.define({
         tabContainer: '.left-panel .tab-container',
         bundleSections: '#bundle-sections',
         rightDetailSourceCode: '#right-detail-source-code',
+        rightDetailAssetInfo: '#right-detail-asset-info',
+        rightDetailIssues: '#right-detail-issues',
     },
     methods: {
         // Handle element item click
@@ -177,25 +181,54 @@ module.exports = Editor.Panel.define({
             }
         },
 
-        // 高亮選中檔案樹節點並載入原始碼
-        handleFileTreeClick(event: Event) {
+        // 高亮選中檔案樹節點並載入原始碼及資產信息
+        async handleFileTreeClick(event: Event) {
             const customEvt = event as CustomEvent<TreeNode>;
             const node = customEvt.detail;
             const filePath = node.detail.path!;
+            // 讀取並顯示原始碼
             try {
                 const content = readFileContent(filePath);
-                const ext = filePath.split('.').pop()?.toLowerCase();
+                const ext = filePath.split('.').pop()!.toLowerCase();
                 let lang = 'typescript';
-                if (ext === 'js') {
-                    lang = 'javascript';
-                } else if (ext === 'json') {
-                    lang = 'json';
-                }
+                if (ext === 'js') lang = 'javascript';
+                else if (ext === 'json') lang = 'json';
                 const codeEl = this.$.rightDetailSourceCode as HTMLElement;
                 codeEl.textContent = content;
                 codeEl.setAttribute('language', lang);
             } catch (err) {
                 console.error('Failed to load file content:', err);
+            }
+            // 查詢並顯示 AssetInfo
+            try {
+                const assetsRoot = join(Editor.Project.path, 'assets');
+                const relpath = path.relative(assetsRoot, filePath);
+                const info = await queryAssetInfo(relpath);
+                const assetEl = this.$.rightDetailAssetInfo as HTMLElement;
+                assetEl.textContent = JSON.stringify(info, null, 2);
+            } catch (e) {
+                console.error('Query asset info failed:', e);
+            }
+            // 查詢並顯示 Issues
+            const issues = node.scriptInfo?.issues || [];
+            const issuesEl = this.$.rightDetailIssues as HTMLElement;
+            if (issues.length === 0) {
+                issuesEl.innerHTML = '<div class="no-issues">No issues found</div>';
+            } else {
+                issuesEl.innerHTML = `
+                    <div class="issues-list">
+                        ${issues.map(issue => `
+                            <div class="issue-item">
+                                <div class="issue-header">
+                                    <span class="issue-line">Line ${issue.line}</span>
+                                    <span class="issue-type">[${issue.type}]</span>
+                                    <span class="issue-severity">[${issue.severity}]</span>
+                                </div>
+                                <div class="issue-message">${issue.message}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             }
         },
     },

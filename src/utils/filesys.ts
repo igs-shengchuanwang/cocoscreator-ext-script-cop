@@ -230,4 +230,10 @@ export async function findBundles(assetsPath: string): Promise<BundleInfo[]> {
     }
     
     return bundles;
-} 
+}
+
+export async function queryAssetInfo(relpath: string): Promise<any> {
+    const url = `db://assets/${relpath}`;
+    const metaInfo = await Editor.Message.request('asset-db', 'query-asset-meta', url);
+    return metaInfo;
+}

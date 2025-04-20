@@ -1,14 +1,5 @@
 import { join } from 'path';
-
-// 定义脚本信息接口
-export interface ScriptInfo {
-    path: string;
-    name: string;
-    size: number;
-    lastModified: Date;
-    dependencies: string[];
-    issues?: string[];
-}
+import { ScriptInfo } from '../../copdb';
 
 // 定义树节点接口
 export interface TreeNode {

@@ -224,3 +224,53 @@
     font-size: 12px;
     color: var(--color-normal-text-weak);
 }
+
+/* Issue Display Styles */
+.issues-list {
+    padding: 10px;
+}
+
+.issue-item {
+    margin-bottom: 12px;
+    padding: 12px;
+    background-color: var(--color-background-secondary);
+    border-radius: 4px;
+    border-left: 3px solid var(--color-warning);
+}
+
+.issue-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.issue-line {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.issue-type {
+    color: var(--color-warning);
+    font-weight: 500;
+}
+
+.issue-severity {
+    color: var(--color-error);
+    font-weight: 500;
+}
+
+.issue-message {
+    color: var(--color-text);
+    font-size: 12px;
+    line-height: 1.4;
+    padding-left: 4px;
+}
+
+.no-issues {
+    padding: 20px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
